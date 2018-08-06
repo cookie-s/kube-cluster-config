@@ -1,0 +1,117 @@
+passwd:
+    users:
+        - name: core
+          ssh_authorized_keys:
+              - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCc9oMKbmL1Jk8W2HoFRPNal4q4Mobr8t+Knlqj3Y6ZA7UuHHGRanDAlBCSFlgJVpQ6/3YlmQyTRduWwxMymHZt0j/E0D153vOEV4rMnw/dOeeVH41qftp4VhihlXU6DxOmWdN5RdMQUPKT1CzZzZa976rYCyvgdO2p0SPvbfk3JNTsI6WEhoivWqa1HuZOUB2F2Y4U2AcsSB49JJq+hWiSioeEBt6luqd+3E8iQ2ZlvVrp9hrPSZ6D7xB5vxjYFSTm/wS8WFCw8t9uMp48RDjr4lTqzNMhx6o53Rmsd0J2bk/Wf4Q5LTVjUL5v8ej2uFaRdew6HnhuX7I6wEfQoWWf
+
+networkd:
+    units:
+        - name: 00-ens192.network
+          contents: |
+              [Match]
+              Name=ens192
+
+              [Network]
+              Address=10.1.0.1/24
+        - name: 01-ens224.network
+          contents: |
+              [Match]
+              Name=ens224
+
+              [Network]
+              DHCP=yes
+
+systemd:
+    units:
+        - name: docker.service
+          enable: true
+        - name: kubelet.service
+          enable: true
+          contents: |
+              [Service]
+              Environment=KUBELET_IMAGE_TAG=v1.10.4_coreos.0
+              Environment="RKT_RUN_ARGS=--uuid-file-save=/var/run/kubelet-pod.uuid \
+                --volume var-log,kind=host,source=/var/log \
+                --mount volume=var-log,target=/var/log \
+                --volume dns,kind=host,source=/etc/resolv.conf \
+                --mount volume=dns,target=/etc/resolv.conf"
+              ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/manifests
+              ExecStartPre=/usr/bin/mkdir -p /var/log/containers
+              ExecStartPre=-/usr/bin/rkt rm --uuid-file=/var/run/kubelet-pod.uuid
+              ExecStart=/usr/lib/coreos/kubelet-wrapper \
+                  --container-runtime=docker \
+                  --register-schedulable=false \
+                  --allow-privileged=true \
+                  --pod-manifest-path=/etc/kubernetes/manifests \
+                  --hostname-override=cluster1-master \
+                  --cluster_dns=10.1.0.1 \
+                  --cluster_domain=cluster.local
+              ExecStop=-/usr/bin/rkt stop --uuid-file=/var/run/kubelet-pod.uuid
+              Restart=always
+              RestartSec=10
+              
+              [Install]
+              WantedBy=multi-user.target
+
+
+storage:
+    files:
+        - filesystem: root
+          path: /etc/hostname
+          mode: 420
+          contents:
+              inline: cluster1-master
+        - filesystem: root
+          path: /etc/hosts
+          append: true
+          mode: 420
+          contents: 
+              inline: '10.1.0.1 cluster1-master'
+        - filesystem: root
+          path: /etc/kubernetes/ssl/ca.pem
+          mode: 384
+          contents:
+              local: ssl/ca.pem
+        - filesystem: root
+          path: /etc/kubernetes/ssl/apiserver.pem
+          mode: 384
+          contents:
+              local: ssl/apiserver.pem
+        - filesystem: root
+          path: /etc/kubernetes/ssl/apiserver-key.pem
+          mode: 384
+          contents:
+              local: ssl/apiserver-key.pem
+        - filesystem: root
+          path: /etc/kubernetes/manifests/kube-apiserver.yaml
+          mode: 420
+          contents:
+              local: kube-apiserver.yaml
+        - filesystem: root
+          path: /etc/kubernetes/manifests/kube-proxy.yaml
+          mode: 420
+          contents:
+              local: kube-proxy.yaml
+        - filesystem: root
+          path: /etc/kubernetes/manifests/kube-controll-manager.yaml
+          mode: 420
+          contents:
+              local: kube-controll-manager.yaml
+        - filesystem: root
+          path: /etc/kubernetes/manifests/kube-scheduler.yaml
+          mode: 420
+          contents:
+              local: kube-scheduler.yaml
+
+etcd:
+    advertise_client_urls: http://cluster1-master:2379
+    initial_advertise_peer_urls: http://cluster1-master:2380
+    listen_client_urls: http://10.1.0.1:2379
+    listen_peer_urls: http://10.1.0.1:2380
+
+flannel:
+    network_config: '{"Network": "10.1.0.0/24"}'
+    etcd_endpoints: http://cluster1-master:2379
+    #etcd_prefix: /cluster1.kcz.sh/network
+    interface: ens192
+
