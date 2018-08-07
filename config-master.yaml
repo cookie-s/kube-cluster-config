@@ -19,7 +19,8 @@ networkd:
               Name=ens224
 
               [Network]
-              DHCP=yes
+              Address=192.168.1.101/24
+              Gateway=192.168.1.1
 
 systemd:
     units:
