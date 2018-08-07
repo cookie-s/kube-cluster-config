@@ -1,0 +1,6 @@
+kind: KubeletConfiguration
+apiVersion: kubelet.config.k8s.io/v1beta1
+
+clusterDomain: cluster.local
+clusterDNS: ['10.1.0.1']
+staticPodPath: /etc/kubernetes/manifests
