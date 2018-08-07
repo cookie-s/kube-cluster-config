@@ -132,7 +132,7 @@ etcd:
     listen_peer_urls: http://10.1.0.1:2380
 
 flannel:
-    network_config: '{"Network": "10.1.0.0/24"}'
+    network_config: '{"Network": "10.5.0.0/24"}'
     etcd_endpoints: http://cluster1-master:2379
     #etcd_prefix: /cluster1.kcz.sh/network
     interface: ens192
