@@ -116,11 +116,6 @@ storage:
           contents:
               local: ssl/apiserver-key.pem
         - filesystem: root
-          path: /etc/kubernetes/manifests/kube-apiserver.yaml
-          mode: 420
-          contents:
-              local: kube-apiserver.yaml
-        - filesystem: root
           path: /etc/kubernetes/ssl/kubelet-client-apiserver-key.pem
           mode: 384
           contents:
@@ -131,20 +126,30 @@ storage:
           contents:
               local: ssl/kubelet-client-apiserver.pem
         - filesystem: root
+          path: /etc/kubernetes/manifests/kube-apiserver.yaml
+          mode: 420
+          contents:
+              local: kube-apiserver.yaml
+        - filesystem: root
           path: /etc/kubernetes/manifests/kube-proxy.yaml
           mode: 420
           contents:
               local: kube-proxy.yaml
         - filesystem: root
-          path: /etc/kubernetes/manifests/kube-controll-manager.yaml
+          path: /etc/kubernetes/manifests/kube-controller-manager.yaml
           mode: 420
           contents:
-              local: kube-controll-manager.yaml
+              local: kube-controller-manager.yaml
         - filesystem: root
           path: /etc/kubernetes/manifests/kube-scheduler.yaml
           mode: 420
           contents:
               local: kube-scheduler.yaml
+        - filesystem: root
+          path: /etc/kubernetes/kube-controller-manager-kubeconfig.yaml
+          mode: 420
+          contents:
+              local: kube-controller-manager-kubeconfig.yaml
 
 etcd:
     advertise_client_urls: http://cluster1-master:2379
