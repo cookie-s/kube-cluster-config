@@ -54,7 +54,7 @@ systemd:
                   --allow-privileged=true \
                   --pod-manifest-path=/etc/kubernetes/manifests \
                   --hostname-override=cluster1-master \
-                  --cluster_dns=10.1.0.1 \
+                  --cluster_dns=10.3.0.250 \
                   --cluster_domain=cluster.local
               ExecStop=-/usr/bin/rkt stop --uuid-file=/var/run/kubelet-pod.uuid
               Restart=always
@@ -120,6 +120,16 @@ storage:
           mode: 420
           contents:
               local: kube-apiserver.yaml
+        - filesystem: root
+          path: /etc/kubernetes/ssl/kubelet-client-apiserver-key.pem
+          mode: 384
+          contents:
+              local: ssl/kubelet-client-apiserver-key.pem
+        - filesystem: root
+          path: /etc/kubernetes/ssl/kubelet-client-apiserver.pem
+          mode: 384
+          contents:
+              local: ssl/kubelet-client-apiserver.pem
         - filesystem: root
           path: /etc/kubernetes/manifests/kube-proxy.yaml
           mode: 420

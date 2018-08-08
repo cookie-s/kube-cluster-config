@@ -14,6 +14,7 @@ spec:
     - --bind-address=0.0.0.0
     - --etcd-servers=http://cluster1-master:2379
     - --allow-privileged=true
+    - --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname
     - --service-cluster-ip-range=10.3.0.0/24
     - --secure-port=443
     - --advertise-address=10.1.0.1
@@ -21,6 +22,8 @@ spec:
     - --tls-cert-file=/etc/kubernetes/ssl/apiserver.pem
     - --tls-private-key-file=/etc/kubernetes/ssl/apiserver-key.pem
     - --client-ca-file=/etc/kubernetes/ssl/ca.pem
+    - --kubelet-client-certificate=/etc/kubernetes/ssl/kubelet-client-apiserver.pem
+    - --kubelet-client-key=/etc/kubernetes/ssl/kubelet-client-apiserver-key.pem
     - --service-account-key-file=/etc/kubernetes/ssl/apiserver-key.pem
     - --runtime-config=extensions/v1beta1/networkpolicies=true
     - --anonymous-auth=false
