@@ -133,6 +133,5 @@ storage:
 flannel:
     network_config: '{"Network": "10.5.0.0/24"}'
     etcd_endpoints: http://cluster1-master:2379
-    #etcd_prefix: /cluster1.kcz.sh/network
     interface: ens192
 
