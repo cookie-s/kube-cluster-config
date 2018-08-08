@@ -14,7 +14,7 @@ spec:
     - --bind-address=0.0.0.0
     - --etcd-servers=http://cluster1-master:2379
     - --allow-privileged=true
-    - --service-cluster-ip-range=10.1.0.0/24
+    - --service-cluster-ip-range=10.3.0.0/24
     - --secure-port=443
     - --advertise-address=10.1.0.1
     - --admission-control=NamespaceLifecycle,LimitRanger,ServiceAccount,DefaultStorageClass,ResourceQuota

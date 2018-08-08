@@ -12,7 +12,7 @@ spec:
     - /hyperkube
     - proxy
     - --master=https://cluster1-master
-    - -- kubeconfig=/etc/kubernetes/kubeconfig.yaml
+    - --kubeconfig=/etc/kubernetes/kubeconfig.yaml
     securityContext:
       privileged: true
     volumeMounts:
