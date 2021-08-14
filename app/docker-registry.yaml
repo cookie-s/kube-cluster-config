@@ -1,0 +1,56 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+    name: registry
+    namespace: kube-infra
+spec:
+    replicas: 1
+    template:
+        metadata:
+            labels:
+                app: registry
+        spec:
+            containers:
+                - name: registry
+                  image: registry:2
+                  ports:
+                      - containerPort: 5000
+                  volumeMounts:
+                      - name: docker-data
+                        mountPath: /var/lib/registry
+            volumes:
+                - name: docker-data
+                  emptyDir: {}
+---
+kind: Service
+apiVersion: v1
+metadata:
+  labels:
+    app: registry
+  name: registry
+  namespace: kube-infra
+spec:
+  ports:
+    - port: 80
+      targetPort: 5000
+  selector:
+    app: registry
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+    name: registry
+    namespace: kube-infra
+    annotations:
+      kubernetes.io/ingress.class: "nginx"
+      ingress.kubernetes.io/rewrite-target: /
+      ingress.kubernetes.io/proxy-body-size: 100m
+spec:
+    rules:
+        - host: registry.kcz.sh
+          http:
+              paths:
+                  - backend:
+                      serviceName: registry
+                      servicePort: 80
+                    path: /

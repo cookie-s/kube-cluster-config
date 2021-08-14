@@ -1,0 +1,39 @@
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  labels:
+    name: mackerel-agent
+  name: mackerel-agent
+spec:
+  template:
+    metadata:
+      labels:
+        app: mackerel-agent
+    spec:
+      containers:
+        - name: mackerel-agent
+          image: mackerel/mackerel-agent:latest
+          imagePullPolicy: Always
+          env:
+          - name: apikey
+            value: "####APIKEY####"
+          - name: opts
+            value: -role=cluster1:nodes
+          - name: enable_docker_plugin
+            value: "1"
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/usr/bin/mackerel-agent", "retire", "-force"]
+          volumeMounts:
+          - name: docker-sock
+            mountPath: /var/run/docker.sock
+          - name: mackerel-id
+            mountPath: /var/lib/mackerel-agent/
+      volumes:
+        - name: docker-sock
+          hostPath:
+            path: /var/run/docker.sock
+        - name: mackerel-id
+          hostPath:
+            path: /var/lib/mackerel-agent/
