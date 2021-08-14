@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Secret
+metadata:
+    name: kcz146-dockerhub
+data:
+    .dockerconfigjson: ewoAAAAAAAAAAAAAAAAAAAAAAA
+type: kubernetes.io/dockerconfigjson
